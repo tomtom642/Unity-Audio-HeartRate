@@ -1,0 +1,59 @@
+using System.Collections;
+using UnityEngine;
+using System.IO.Ports;
+using UnityEngine.Audio;
+
+
+
+                 public class Heartrate_Bpm : MonoBehaviour {
+
+                 public AudioMixer mixer;
+                 public AudioMixerSnapshot[] snapshots;
+
+
+
+    SerialPort sp = new SerialPort("/dev/cu.usbmodem1411", 9600);
+    // "/dev/cu. (If using Mac the ".usbmodem" line will be different, check bottom right of your arduino AI for what number port you're using)
+    // 9600 is the serial monitor rate specified through the Arduino code, make sure both are the same
+
+    // Use this for initialization
+    void Start()
+    {
+        sp.Open();
+        sp.ReadTimeout = 0;
+    }
+
+   private void Awake()
+    {
+        mixer.FindSnapshot("");
+    }
+
+    // Update is called once per frame
+    public void Update()
+    {
+        if (sp.IsOpen)
+        {
+            string value = sp.ReadLine();
+            if (value.StartsWith("B"))
+
+            {
+                string [] newValue = value.Split(' ');
+                Debug.Log("HeartBeat");
+                Debug.Log(newValue[1]);
+                // The value of your heart rate can be seen in the debug log
+
+                {
+                    if (int.Parse(newValue[1]) >= 90)
+                    // the int value can be changed to what value you bpm value you want to start the change to snapshots
+                    {
+                        mixer.FindSnapshot("").TransitionTo(1.0f);
+                    }
+                    else 
+                    {
+                        mixer.FindSnapshot("").TransitionTo(1.0f);
+                    }
+                }
+            }
+        }
+    }
+}
